@@ -1,0 +1,129 @@
+definitions:
+  docsmodels.ErrorResponse:
+    properties:
+      error:
+        example: invalid user_id format
+        type: string
+    type: object
+  docsmodels.SuccessMessage:
+    properties:
+      message:
+        example: success
+        type: string
+    type: object
+  docsmodels.TokenResponse:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+    type: object
+  docsmodels.UUIDResponse:
+    properties:
+      data:
+        example: f8dc39e0-9b2b-4c58-bfa0-dc6dc4d6479b
+        type: string
+      message:
+        example: success
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: часть сервиса аутентификации
+  title: Тестовое задание MEDODS junior
+  version: "1.0"
+paths:
+  /api/v1/refresh:
+    get:
+      description: Опиши здесь, какие заголовки и куки требуются, и что возвращается
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/docsmodels.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docsmodels.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docsmodels.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Обновить access токен по refresh токену
+      tags:
+      - Auth
+  /api/v1/token:
+    get:
+      description: Опиши здесь подробно, что возвращается в обоих случаях
+      parameters:
+      - description: UUID пользователя
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/docsmodels.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/docsmodels.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docsmodels.ErrorResponse'
+      summary: Получить access и refresh токены
+      tags:
+      - Auth
+  /api/v1/user/logout:
+    get:
+      description: Удаляет refresh-сессию из БД и чистит куку
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/docsmodels.SuccessMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/docsmodels.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Выход пользователя
+      tags:
+      - User
+  /api/v1/user/uuid:
+    get:
+      description: Возвращает текущий user_id из middleware
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/docsmodels.UUIDResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/docsmodels.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Получить UUID авторизованного пользователя
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

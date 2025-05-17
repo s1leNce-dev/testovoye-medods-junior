@@ -1,0 +1,48 @@
+services:
+  server-app:
+    build: ./server
+    container_name: server_app
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: testovoye
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: t@t.com
+      PGADMIN_DEFAULT_PASSWORD: 123
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - backend
+    depends_on:
+      - db
+  
+volumes:
+  pg_data:
+  pgadmin_data:
+
+networks:
+  backend:
